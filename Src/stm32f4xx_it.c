@@ -281,6 +281,8 @@ void TIM6_DAC_IRQHandler(void)
       Tach_Value = 0;
     }
     
+    
+    
     Tach_TimeBuf_AveCnt = 0;
     Tach_TimeTick = 0;
   }
