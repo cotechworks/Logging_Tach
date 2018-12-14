@@ -281,6 +281,8 @@ void TIM6_DAC_IRQHandler(void)
       Tach_Value = 0;
     }
     
+    /* Trasport USART2 */
+    LL_USART_TransmitData8(USART2, 0x41);
     
     
     Tach_TimeBuf_AveCnt = 0;
