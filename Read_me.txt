@@ -1,5 +1,5 @@
-/* Debug memo */
-ƒfƒoƒbƒKFJ-Link
+ï»¿/* Debug memo */
+ãƒ‡ãƒãƒƒã‚¬ï¼šJ-Link
 
 /* Tach memo */
 TIM6  1 count per 10us
