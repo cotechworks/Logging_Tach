@@ -35,13 +35,26 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
+#include <stdio.h>
+
 #define TACH_AVE_NUMBER 10
+#define USART_TX_SIZE 100
 
 uint32_t Tach_TimeBuf[TACH_AVE_NUMBER] = {0};
 uint32_t Tach_TimeBuf_Ave = 0;
 uint32_t Tach_TimeBuf_AveCnt = 0;
 uint32_t Tach_TimeTick = 0;
 uint32_t Tach_Value = 0;
+
+char USART_Tx_Array[USART_TX_SIZE] = {0};
+uint8_t USART_Tx_Size = 0;
+uint8_t USART_Tx_Count = 0;
+
+
+void USART2_TxStart(void){
+  USART_Tx_Count = 0;
+  LL_USART_EnableIT_TXE(USART2);
+}
 
 /* USER CODE END 0 */
 
@@ -230,7 +243,14 @@ void EXTI0_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-  asm("NOP");
+  
+  if(USART_Tx_Count < USART_Tx_Size){
+    LL_USART_TransmitData8(USART2, USART_Tx_Array[USART_Tx_Count]);
+    USART_Tx_Count++;
+  }else{
+    LL_USART_DisableIT_TXE(USART2);
+  }
+  
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */
 
@@ -282,8 +302,15 @@ void TIM6_DAC_IRQHandler(void)
     }
     
     /* Trasport USART2 */
-    LL_USART_TransmitData8(USART2, 0x41);
-    
+    sprintf(USART_Tx_Array, "%d\n\r", Tach_Value);
+    if(Tach_Value / 10000 >= 1){
+      USART_Tx_Size = 7;
+    }else if(Tach_Value / 1000 >= 1){
+      USART_Tx_Size = 6;
+    }else{
+      USART_Tx_Size = 5;
+    }
+    USART2_TxStart();
     
     Tach_TimeBuf_AveCnt = 0;
     Tach_TimeTick = 0;
